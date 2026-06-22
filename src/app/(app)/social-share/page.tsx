@@ -23,28 +23,85 @@ const Page = () => {
   const [isTransforming, setIsTransforming] = useState<boolean>(false);
   const imageRef = useRef<HTMLImageElement>(null);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  // const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+
+  //   if (!file) return;
+  //   setIsUploading(true);
+  //   const formData = new FormData();
+  //   formData.append("file", file);
+
+  //   try {
+  //     const { data } = await axios.post('/api/image-upload', formData, {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data"
+  //       }
+  //     } );
+  //     if (data.success) {
+  //       setUploadedImage(data.publicId);
+  //     } else {
+  //       toast.error(data.message);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("Failed to upload image");
+  //   } finally {
+  //     setIsUploading(false);
+  //   }
+  // }
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+
+    const file =
+      event.target.files?.[0];
 
     if (!file) return;
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "file",
+      file
+    );
 
     try {
-      const { data } = await axios.post('/api/image-upload', { formData });
-      if (data.success) {
-        setUploadedImage(data.publicId);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to upload image");
+
+      setIsUploading(true);
+
+      const { data } =
+        await axios.post(
+          "/api/image-upload",
+          formData,
+          {
+            headers: {
+              "Content-Type":
+                "multipart/form-data"
+            }
+          }
+        );
+
+      setUploadedImage(
+        data.publicId
+      );
+
+      toast.success(
+        "Image uploaded"
+      );
+
+    } catch {
+
+      toast.error(
+        "Upload failed"
+      );
+
     } finally {
+
       setIsUploading(false);
     }
-  }
+  };
 
   const handleDownload = () => {
     if (!imageRef.current) {
@@ -55,12 +112,12 @@ const Page = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${selectedFormat.replace(/\s+/g, "_").toLowerCase()}.png`;
+      link.download =
+        `${selectedFormat.replace(/\s+/g, "_").toLowerCase()}`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
     });
   }
 
